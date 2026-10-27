@@ -48,194 +48,668 @@ st.set_page_config(
     page_title="ZeroDefect — Industrial Surface Inspection",
     page_icon="🔬",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
     menu_items={
         "About": "ZeroDefect — Intelligent Industrial Surface Defect Detection System\n"
                  "Academic prototype. Results require human verification."
     }
 )
 
-# ── Custom CSS ──────────────────────────────────────────────
+# ── Custom CSS  (Radix UI Design System + Animations) ────────
 st.markdown("""
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-/* ── Root palette ── */
+/* ════════════════════════════════════════════════
+   RADIX UI DESIGN TOKENS
+   Based on Radix Colors + Radix Themes spacing
+════════════════════════════════════════════════ */
 :root {
-  --bg-deep:    #080c14;
-  --bg-card:    #0f1726;
-  --bg-panel:   #141e33;
-  --accent:     #3a86ff;
-  --accent2:    #ff006e;
-  --accent3:    #fb8500;
-  --success:    #06d6a0;
-  --warning:    #ffd166;
-  --danger:     #ef233c;
-  --text-main:  #e8eaf0;
-  --text-muted: #8b92a5;
-  --border:     rgba(58, 134, 255, 0.18);
+  /* Radix Gray Dark */
+  --gray-1:  #111113; --gray-2:  #19191b; --gray-3:  #222325;
+  --gray-4:  #292a2e; --gray-5:  #303136; --gray-6:  #393a40;
+  --gray-7:  #46474e; --gray-8:  #5f6169; --gray-9:  #6c6e79;
+  --gray-10: #7d7f8a; --gray-11: #b2b3bc; --gray-12: #edeef0;
+
+  /* Radix Blue Dark */
+  --blue-1:  #0d1520; --blue-2:  #111927; --blue-3:  #0d2847;
+  --blue-4:  #003362; --blue-5:  #004074; --blue-6:  #104d87;
+  --blue-7:  #205d9e; --blue-8:  #2870bd; --blue-9:  #0090ff;
+  --blue-10: #3b9eff; --blue-11: #70b8ff; --blue-12: #c2e6ff;
+
+  /* Radix Violet Dark */
+  --violet-9:  #6e56cf; --violet-10: #7d66d9; --violet-11: #baa7ff;
+
+  /* Radix Green Dark */
+  --green-9:  #46a758; --green-10: #55b467; --green-11: #71d083;
+
+  /* Radix Red Dark */
+  --red-9: #e5484d; --red-10: #f2555a; --red-11: #ff6369;
+
+  /* Radix Amber Dark */
+  --amber-9: #ffb224; --amber-10: #ffcb47; --amber-11: #f1a10d;
+
+  /* Semantic tokens */
+  --bg:           var(--gray-1);
+  --surface:      var(--gray-2);
+  --surface-2:    var(--gray-3);
+  --panel:        var(--gray-4);
+  --border:       var(--gray-6);
+  --border-hover: var(--gray-7);
+  --text-primary: var(--gray-12);
+  --text-secondary: var(--gray-11);
+  --text-muted:   var(--gray-10);
+  --accent:       var(--blue-9);
+  --accent-hover: var(--blue-10);
+  --accent-light: var(--blue-11);
+  --accent-subtle: rgba(0, 144, 255, 0.12);
+  --success:      var(--green-9);
+  --warning:      var(--amber-9);
+  --danger:       var(--red-9);
+
+  /* Radix radius tokens */
+  --radius-1: 3px;  --radius-2: 4px;  --radius-3: 6px;
+  --radius-4: 8px;  --radius-5: 12px; --radius-6: 16px;
+  --radius-full: 9999px;
+
+  /* Radix spacing (4px base) */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px;
+  --space-4: 16px; --space-5: 24px; --space-6: 32px;
+  --space-7: 40px; --space-8: 48px; --space-9: 64px;
+
+  /* Shadow tokens */
+  --shadow-1: 0 1px 3px rgba(0,0,0,0.4);
+  --shadow-2: 0 4px 16px rgba(0,0,0,0.5);
+  --shadow-3: 0 8px 32px rgba(0,0,0,0.6);
+  --shadow-accent: 0 0 24px rgba(0,144,255,0.25);
 }
 
-/* ── Base ── */
+/* ═══════ ANIMATIONS ═══════ */
+@keyframes fadeInUp {
+  from { opacity:0; transform: translateY(24px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity:0; } to { opacity:1; }
+}
+@keyframes slideInLeft {
+  from { opacity:0; transform: translateX(-20px); }
+  to   { opacity:1; transform: translateX(0); }
+}
+@keyframes shimmer {
+  0%   { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(0,144,255,0.4); }
+  70%  { box-shadow: 0 0 0 10px rgba(0,144,255,0); }
+  100% { box-shadow: 0 0 0 0 rgba(0,144,255,0); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes countUp {
+  from { opacity:0; transform: scale(0.8); }
+  to   { opacity:1; transform: scale(1); }
+}
+
+/* ═══════ GLOBAL RESET & BASE ═══════ */
+* { box-sizing: border-box; }
+
 .stApp {
-    background: var(--bg-deep) !important;
-    color: var(--text-main) !important;
-    font-family: 'Inter', 'Segoe UI', sans-serif !important;
+    background: var(--bg) !important;
+    color: var(--text-primary) !important;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* ── Sidebar ── */
-[data-testid="stSidebar"] {
-    background: var(--bg-card) !important;
-    border-right: 1px solid var(--border);
-}
-[data-testid="stSidebar"] * { color: var(--text-main) !important; }
+/* Hide Streamlit sidebar completely */
+[data-testid="stSidebar"] { display: none !important; }
+[data-testid="collapsedControl"] { display: none !important; }
 
-/* ── Main header ── */
-.hero-title {
-    text-align: center;
-    font-size: 2.6rem;
+/* Remove default Streamlit header spacing */
+.block-container {
+    padding-top: 0 !important;
+    max-width: 100% !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+}
+
+/* ═══════ TOP NAVIGATION BAR ═══════ */
+.zd-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(17, 17, 19, 0.92);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid var(--border);
+    padding: 0 var(--space-6);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    animation: fadeIn 0.3s ease;
+}
+.zd-navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    text-decoration: none;
+}
+.zd-navbar-logo {
+    font-size: 1.4rem;
+    animation: float 3s ease-in-out infinite;
+    display: inline-block;
+}
+.zd-navbar-wordmark {
+    font-size: 1.05rem;
     font-weight: 800;
-    background: linear-gradient(135deg, #3a86ff 0%, #8338ec 50%, #ff006e 100%);
+    background: linear-gradient(135deg, var(--blue-9), var(--violet-9));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 0.2rem;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.3px;
 }
-.hero-sub {
-    text-align: center;
+.zd-navbar-sub {
+    font-size: 0.7rem;
     color: var(--text-muted);
-    font-size: 1.05rem;
-    margin-bottom: 1.2rem;
+    letter-spacing: 0.4px;
+    font-weight: 500;
 }
-.hero-badge {
-    display: inline-block;
-    background: rgba(58, 134, 255, 0.15);
-    border: 1px solid var(--accent);
-    border-radius: 20px;
-    padding: 3px 14px;
-    font-size: 0.78rem;
+.zd-nav-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+.zd-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--radius-4);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+.zd-nav-link:hover {
+    color: var(--text-primary);
+    background: var(--surface-2);
+    border-color: var(--border);
+}
+.zd-nav-link.active {
     color: var(--accent);
+    background: var(--accent-subtle);
+    border-color: rgba(0,144,255,0.25);
+    font-weight: 600;
+}
+.zd-nav-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: 0.68rem;
+    font-weight: 600;
     letter-spacing: 0.5px;
+    text-transform: uppercase;
+    background: rgba(0,144,255,0.15);
+    color: var(--blue-11);
+    border: 1px solid rgba(0,144,255,0.3);
 }
 
-/* ── Cards ── */
-.zd-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 1.4rem 1.6rem;
-    margin-bottom: 1.2rem;
+/* ═══════ PAGE WRAPPER ═══════ */
+.zd-page {
+    padding: var(--space-6) var(--space-5);
+    animation: fadeInUp 0.4s ease;
 }
-.zd-metric-card {
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1rem 1.2rem;
+
+/* ═══════ HERO SECTION ═══════ */
+.zd-hero {
     text-align: center;
+    padding: var(--space-9) var(--space-5) var(--space-7);
+    animation: fadeInUp 0.5s ease;
 }
-.zd-metric-value {
-    font-size: 2rem;
-    font-weight: 700;
+.zd-hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 14px;
+    border-radius: var(--radius-full);
+    background: var(--accent-subtle);
+    border: 1px solid rgba(0,144,255,0.3);
+    color: var(--blue-11);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: var(--space-4);
+}
+.zd-hero-title {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 900;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    margin-bottom: var(--space-4);
+    background: linear-gradient(135deg, #fff 0%, var(--blue-11) 40%, var(--violet-11) 70%, #fff 100%);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-shift 4s ease infinite;
+}
+.zd-hero-desc {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto var(--space-6);
+    line-height: 1.7;
+}
+.zd-hero-tags {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+.zd-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    font-size: 0.78rem;
+    font-weight: 500;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    background: var(--surface);
+    transition: all 0.15s ease;
+}
+.zd-tag:hover {
+    border-color: var(--accent);
     color: var(--accent);
 }
+
+/* ═══════ RADIX-STYLE CARDS ═══════ */
+.zd-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-5);
+    padding: var(--space-5);
+    margin-bottom: var(--space-4);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    animation: fadeInUp 0.4s ease;
+}
+.zd-card:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-2);
+}
+.zd-card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--border);
+}
+.zd-card-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-3);
+    background: var(--accent-subtle);
+    border: 1px solid rgba(0,144,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+.zd-card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.2px;
+}
+
+/* ═══════ METRIC CARDS ═══════ */
+.zd-metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-5);
+    padding: var(--space-4) var(--space-5);
+    text-align: center;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    animation: countUp 0.5s ease;
+}
+.zd-metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--blue-9), var(--violet-9));
+}
+.zd-metric-card:hover {
+    border-color: rgba(0,144,255,0.3);
+    box-shadow: var(--shadow-accent);
+    transform: translateY(-2px);
+}
+.zd-metric-value {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 4px;
+}
 .zd-metric-label {
-    font-size: 0.8rem;
+    font-size: 0.72rem;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.8px;
-}
-
-/* ── Verdict boxes ── */
-.verdict-ok {
-    background: linear-gradient(135deg, rgba(6,214,160,0.12), rgba(6,214,160,0.04));
-    border: 1.5px solid var(--success);
-    border-radius: 12px;
-    padding: 1rem 1.4rem;
-    color: var(--success);
-    font-size: 1.15rem;
-    font-weight: 700;
-    text-align: center;
-}
-.verdict-warn {
-    background: linear-gradient(135deg, rgba(255,209,102,0.12), rgba(255,209,102,0.04));
-    border: 1.5px solid var(--warning);
-    border-radius: 12px;
-    padding: 1rem 1.4rem;
-    color: var(--warning);
-    font-size: 1.15rem;
-    font-weight: 700;
-    text-align: center;
-}
-.verdict-bad {
-    background: linear-gradient(135deg, rgba(239,35,60,0.12), rgba(239,35,60,0.04));
-    border: 1.5px solid var(--danger);
-    border-radius: 12px;
-    padding: 1rem 1.4rem;
-    color: var(--danger);
-    font-size: 1.15rem;
-    font-weight: 700;
-    text-align: center;
-}
-
-/* ── Section headers ── */
-.section-header {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--accent);
-    border-left: 4px solid var(--accent);
-    padding-left: 0.7rem;
-    margin: 1.4rem 0 0.8rem 0;
-}
-
-/* ── Info notice ── */
-.notice {
-    background: rgba(58,134,255,0.08);
-    border-left: 3px solid var(--accent);
-    border-radius: 0 8px 8px 0;
-    padding: 0.7rem 1rem;
-    font-size: 0.88rem;
-    color: var(--text-muted);
-    margin: 0.8rem 0;
-}
-
-/* ── Tabs ── */
-[data-baseweb="tab"] {
-    color: var(--text-muted) !important;
     font-weight: 600;
 }
-[aria-selected="true"] {
-    color: var(--accent) !important;
-    border-bottom: 2px solid var(--accent) !important;
+
+/* ═══════ VERDICT BOXES ═══════ */
+.verdict-ok {
+    background: rgba(70,167,88,0.08);
+    border: 1px solid rgba(70,167,88,0.35);
+    border-radius: var(--radius-5);
+    padding: var(--space-4) var(--space-5);
+    color: var(--green-11);
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-align: center;
+    animation: fadeInUp 0.3s ease;
+}
+.verdict-warn {
+    background: rgba(255,178,36,0.08);
+    border: 1px solid rgba(255,178,36,0.35);
+    border-radius: var(--radius-5);
+    padding: var(--space-4) var(--space-5);
+    color: var(--amber-11);
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-align: center;
+    animation: fadeInUp 0.3s ease;
+}
+.verdict-bad {
+    background: rgba(229,72,77,0.08);
+    border: 1px solid rgba(229,72,77,0.35);
+    border-radius: var(--radius-5);
+    padding: var(--space-4) var(--space-5);
+    color: var(--red-11);
+    font-size: 1.05rem;
+    font-weight: 700;
+    text-align: center;
+    animation: pulse-ring 1.5s ease, fadeInUp 0.3s ease;
 }
 
-/* ── Buttons ── */
+/* ═══════ SECTION HEADERS ═══════ */
+.section-header {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: var(--space-6) 0 var(--space-3) 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    letter-spacing: -0.3px;
+}
+.section-header::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 16px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, var(--blue-9), var(--violet-9));
+    flex-shrink: 0;
+}
+
+/* ═══════ NOTICE / CALLOUT ═══════ */
+.notice {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    background: rgba(0,144,255,0.06);
+    border: 1px solid rgba(0,144,255,0.2);
+    border-radius: var(--radius-4);
+    padding: var(--space-3) var(--space-4);
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin: var(--space-3) 0;
+}
+
+/* ═══════ BUTTONS ═══════ */
 .stButton > button {
-    background: linear-gradient(135deg, #3a86ff, #8338ec) !important;
+    background: var(--blue-9) !important;
     color: white !important;
     border: none !important;
-    border-radius: 8px !important;
-    font-weight: 700 !important;
-    padding: 0.5rem 1.6rem !important;
-    letter-spacing: 0.3px;
-    transition: all 0.2s ease;
+    border-radius: var(--radius-4) !important;
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+    padding: 8px 20px !important;
+    letter-spacing: 0.1px;
+    transition: all 0.15s ease !important;
+    font-family: 'Inter', sans-serif !important;
+    box-shadow: var(--shadow-1) !important;
 }
 .stButton > button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 20px rgba(58,134,255,0.4);
+    background: var(--blue-10) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 16px rgba(0,144,255,0.35) !important;
+}
+.stButton > button:active {
+    transform: translateY(0) !important;
 }
 
-/* ── Images ── */
+/* ═══════ INPUTS ═══════ */
+.stSelectbox > div > div,
+.stSlider,
+.stFileUploader,
+.stTextInput > div > div {
+    animation: fadeIn 0.3s ease;
+}
+[data-baseweb="select"] > div {
+    background: var(--surface-2) !important;
+    border-color: var(--border) !important;
+    border-radius: var(--radius-4) !important;
+    color: var(--text-primary) !important;
+}
+
+/* ═══════ TABS ═══════ */
+[data-baseweb="tab-list"] {
+    background: var(--surface) !important;
+    border-radius: var(--radius-5) !important;
+    padding: 4px !important;
+    gap: 2px !important;
+    border: 1px solid var(--border) !important;
+}
+[data-baseweb="tab"] {
+    color: var(--text-secondary) !important;
+    font-weight: 500 !important;
+    border-radius: var(--radius-3) !important;
+    padding: 6px 14px !important;
+    transition: all 0.15s ease !important;
+}
+[aria-selected="true"] {
+    color: var(--text-primary) !important;
+    background: var(--surface-2) !important;
+}
+
+/* ═══════ IMAGES ═══════ */
 [data-testid="stImage"] img {
-    border-radius: 10px;
+    border-radius: var(--radius-5);
     border: 1px solid var(--border);
+    transition: all 0.2s ease;
+}
+[data-testid="stImage"] img:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-2);
 }
 
-/* ── Divider ── */
-hr { border-color: var(--border) !important; }
+/* ═══════ EXPANDER ═══════ */
+.streamlit-expanderHeader {
+    background: var(--surface) !important;
+    border-radius: var(--radius-4) !important;
+    border: 1px solid var(--border) !important;
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+}
+.streamlit-expanderContent {
+    border: 1px solid var(--border) !important;
+    border-top: none !important;
+    border-radius: 0 0 var(--radius-4) var(--radius-4) !important;
+    background: var(--surface) !important;
+}
 
-/* ── Scrollbar ── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg-deep); }
-::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+/* ═══════ DATAFRAME ═══════ */
+[data-testid="stDataFrame"] {
+    border-radius: var(--radius-5) !important;
+    overflow: hidden;
+    border: 1px solid var(--border) !important;
+    animation: fadeInUp 0.3s ease;
+}
+
+/* ═══════ RADIO ═══════ */
+[data-baseweb="radio"] > div {
+    gap: var(--space-2) !important;
+}
+
+/* ═══════ SUCCESS / ERROR / WARNING messages ═══════ */
+.stSuccess {
+    background: rgba(70,167,88,0.08) !important;
+    border: 1px solid rgba(70,167,88,0.3) !important;
+    border-radius: var(--radius-4) !important;
+    animation: fadeInUp 0.3s ease;
+}
+.stError {
+    background: rgba(229,72,77,0.08) !important;
+    border: 1px solid rgba(229,72,77,0.3) !important;
+    border-radius: var(--radius-4) !important;
+    animation: fadeInUp 0.3s ease;
+}
+.stWarning {
+    background: rgba(255,178,36,0.08) !important;
+    border: 1px solid rgba(255,178,36,0.3) !important;
+    border-radius: var(--radius-4) !important;
+    animation: fadeInUp 0.3s ease;
+}
+.stInfo {
+    background: rgba(0,144,255,0.08) !important;
+    border: 1px solid rgba(0,144,255,0.25) !important;
+    border-radius: var(--radius-4) !important;
+    animation: fadeInUp 0.3s ease;
+}
+
+/* ═══════ SKELETON SHIMMER ═══════ */
+.zd-skeleton {
+    background: linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 50%, var(--surface) 75%);
+    background-size: 1000px 100%;
+    animation: shimmer 1.8s infinite;
+    border-radius: var(--radius-4);
+}
+
+/* ═══════ PROGRESS PIPELINE STEP ═══════ */
+.zd-step {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border-radius: var(--radius-4);
+    transition: all 0.15s ease;
+    animation: slideInLeft 0.4s ease;
+}
+.zd-step:hover {
+    background: var(--surface-2);
+}
+.zd-step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-full);
+    background: var(--accent-subtle);
+    border: 1px solid rgba(0,144,255,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--blue-11);
+    flex-shrink: 0;
+}
+.zd-step-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+.zd-step-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+/* ═══════ STAT ROW ═══════ */
+.zd-stat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+}
+.zd-stat-row:last-child { border-bottom: none; }
+.zd-stat-key { color: var(--text-muted); font-weight: 500; }
+.zd-stat-val { color: var(--text-primary); font-weight: 600; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.8rem; }
+
+/* ═══════ FEATURE PILL ═══════ */
+.zd-feature-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    margin: 3px;
+    transition: all 0.15s ease;
+}
+.zd-feature-pill:hover {
+    background: var(--accent-subtle);
+    border-color: rgba(0,144,255,0.3);
+    color: var(--blue-11);
+}
+
+/* ═══════ SCROLLBAR ═══════ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--gray-2); }
+::-webkit-scrollbar-thumb { background: var(--gray-7); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gray-8); }
+
+/* ═══════ DIVIDER ═══════ */
+hr { border-color: var(--border) !important; margin: var(--space-5) 0 !important; }
+
+/* ═══════ SPINNER ═══════ */
+.stSpinner > div {
+    border-color: var(--blue-9) transparent transparent transparent !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -261,11 +735,26 @@ def mask_to_bytes(mask: np.ndarray) -> bytes:
 
 def show_verdict(verdict: str):
     if "No suspicious" in verdict:
-        st.markdown(f'<div class="verdict-ok">✅ {verdict}</div>', unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="verdict-ok">'
+            f'<span style="font-size:1.3rem;">✅</span>&nbsp; {verdict}'
+            f'</div>',
+            unsafe_allow_html=True
+        )
     elif "inconclusive" in verdict.lower():
-        st.markdown(f'<div class="verdict-warn">⚠️ {verdict}</div>', unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="verdict-warn">'
+            f'<span style="font-size:1.3rem;">⚠️</span>&nbsp; {verdict}'
+            f'</div>',
+            unsafe_allow_html=True
+        )
     else:
-        st.markdown(f'<div class="verdict-bad">🚨 {verdict}</div>', unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="verdict-bad">'
+            f'<span style="font-size:1.3rem;">🚨</span>&nbsp; {verdict}'
+            f'</div>',
+            unsafe_allow_html=True
+        )
 
 
 def metric_card(label: str, value: str, col):
@@ -280,40 +769,81 @@ def metric_card(label: str, value: str, col):
 
 
 # ════════════════════════════════════════════════
-# SIDEBAR
+# TOP NAVIGATION BAR
 # ════════════════════════════════════════════════
 
-def render_sidebar():
-    with st.sidebar:
-        st.markdown("""
-        <div style="text-align:center; padding: 1rem 0 0.5rem;">
-            <span style="font-size:2.4rem;">🔬</span>
-            <div style="font-size:1.2rem; font-weight:800; color:#3a86ff; margin-top:4px;">
-                ZeroDefect
-            </div>
-            <div style="font-size:0.75rem; color:#8b92a5; margin-top:2px;">
-                Surface Inspection System
+NAV_PAGES = [
+    ("🏠", "Overview",      "🏠 Overview"),
+    ("🔍", "Inspect",       "🔍 Inspect Image"),
+    ("📊", "Visualise",     "📊 Visual Analysis"),
+    ("📈", "Metrics",       "📈 Metrics & Evaluation"),
+    ("📤", "Export",        "📤 Export"),
+]
+
+def render_navbar():
+    """Render a sticky top navigation bar and return the active page key."""
+    if "active_page" not in st.session_state:
+        st.session_state.active_page = "🏠 Overview"
+
+    # Build link buttons HTML — clicking sets session state via a hidden Streamlit radio
+    links_html = ""
+    for icon, label, key in NAV_PAGES:
+        is_active = st.session_state.active_page == key
+        active_cls = "active" if is_active else ""
+        links_html += f'<span class="zd-nav-link {active_cls}" onclick="void(0)">{icon} {label}</span>'
+
+    st.markdown(f"""
+    <div class="zd-navbar">
+        <div class="zd-navbar-brand">
+            <span class="zd-navbar-logo">🔬</span>
+            <div>
+                <div class="zd-navbar-wordmark">ZeroDefect</div>
+                <div class="zd-navbar-sub">SURFACE INSPECTION SYSTEM</div>
             </div>
         </div>
-        <hr/>
-        """, unsafe_allow_html=True)
-
-        page = st.radio(
-            "Navigation",
-            ["🏠 Overview", "🔍 Inspect Image", "📊 Visual Analysis", "📈 Metrics & Evaluation", "📤 Export"],
-            label_visibility="collapsed",
-        )
-
-        st.markdown("<hr/>", unsafe_allow_html=True)
-        st.markdown('<div class="notice">⚠️ Academic prototype. Results require human verification and are not suitable for industrial deployment.</div>', unsafe_allow_html=True)
-
-        st.markdown("---")
-        st.markdown("""
-        <div style="font-size:0.75rem; color:#8b92a5; text-align:center;">
-            ZeroDefect v1.0 · Academic Use<br/>
-            Dataset: MVTec AD (non-commercial)
+        <div class="zd-nav-links">
+            {links_html}
         </div>
-        """, unsafe_allow_html=True)
+        <span class="zd-nav-badge">v1.0 Academic</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Use a hidden radio for actual Streamlit state (this is how Streamlit routing works)
+    page = st.radio(
+        "Page",
+        [key for _, _, key in NAV_PAGES],
+        index=[key for _, _, key in NAV_PAGES].index(st.session_state.active_page),
+        horizontal=True,
+        label_visibility="collapsed",
+        key="_nav_radio",
+    )
+    st.session_state.active_page = page
+
+    # Style the radio to look like pills (visible nav fallback)
+    st.markdown("""
+    <style>
+    div[data-testid="stHorizontalBlock"] > div:has([data-baseweb="radio"]) {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-5);
+        padding: 6px 10px;
+        margin-bottom: var(--space-4);
+    }
+    [data-baseweb="radio"] label > div:first-child {
+        background: transparent !important;
+        border-color: var(--border) !important;
+    }
+    [data-baseweb="radio"] label > div:first-child[data-checked="true"] {
+        background: var(--blue-9) !important;
+        border-color: var(--blue-9) !important;
+    }
+    [data-baseweb="radio"] label span {
+        font-size: 0.85rem !important;
+        font-weight: 500 !important;
+        color: var(--text-secondary) !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
     return page
 
@@ -1087,7 +1617,9 @@ def _make_demo_image(demo_type: str) -> np.ndarray:
 # ════════════════════════════════════════════════
 
 def main():
-    page = render_sidebar()
+    page = render_navbar()
+
+    st.markdown('<div class="zd-page">', unsafe_allow_html=True)
 
     if page == "🏠 Overview":
         page_overview()
@@ -1099,6 +1631,33 @@ def main():
         page_metrics()
     elif page == "📤 Export":
         page_export()
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # Footer
+    st.markdown("""
+    <div style="
+        text-align:center;
+        padding: 32px 0 24px;
+        border-top: 1px solid var(--border);
+        margin-top: 48px;
+        color: var(--text-muted);
+        font-size: 0.78rem;
+    ">
+        <div style="margin-bottom:6px;">
+            <strong style="color:var(--text-secondary);">ZeroDefect</strong>
+            &nbsp;·&nbsp; Surface Defect Detection
+            &nbsp;·&nbsp; Academic Prototype
+            &nbsp;·&nbsp; v1.0
+        </div>
+        <div>
+            Dataset: <a href="https://github.com/abin24/Surface-Inspection-defect-detection-dataset"
+            style="color:var(--blue-11); text-decoration:none;"
+            target="_blank">NEU Micro Surface Defect DB</a>
+            &nbsp;·&nbsp; Built with OpenCV, scikit-image, Streamlit
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
