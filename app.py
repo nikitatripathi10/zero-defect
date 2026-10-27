@@ -408,15 +408,17 @@ The system combines **classical digital image processing** with **texture featur
         st.markdown('<div class="zd-card">', unsafe_allow_html=True)
         st.markdown('<div class="section-header">Dataset</div>', unsafe_allow_html=True)
         st.markdown("""
-**MVTec Anomaly Detection (MVTec AD)**  
-[mvtec.com/research-teaching/datasets/mvtec-ad](https://www.mvtec.com/research-teaching/datasets/mvtec-ad)
+**NEU Micro Surface Defect Database**  
+*(Northeastern University — included in this project)*
 
-- 15 industrial object/texture categories
-- Provides normal training images + defective test images
-- Includes pixel-level ground-truth masks
-- Licensed for non-commercial academic use
+- **51 real industrial surface images** across 5 defect categories
+- Scratch, Small Defect, Wipe Crack, SDI, SPDI defects
+- Real steel/oil surface photographs from manufacturing
+- Available directly in the app under 📂 Real Dataset tab
 
-*This project uses one texture category (e.g., leather, wood, carpet).*
+**MVTec AD** (optional, for ground-truth evaluation)  
+[mvtec.com/research-teaching/datasets/mvtec-ad](https://www.mvtec.com/research-teaching/datasets/mvtec-ad)  
+*Licensed for non-commercial academic use only.*
         """)
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -459,7 +461,7 @@ def page_inspect():
 
     source_tab = st.radio(
         "Choose source",
-        ["📁 Upload image", "🧪 Use synthetic demo"],
+        ["📁 Upload image", "📂 Real Dataset (NEU)", "🧪 Use synthetic demo"],
         horizontal=True,
         key="img_src",
         label_visibility="collapsed",
@@ -477,6 +479,52 @@ def page_inspect():
             try:
                 image = load_image_from_bytes(uploaded.read())
                 st.success(f"✅ Loaded: **{uploaded.name}** ({image.shape[1]}×{image.shape[0]} px)")
+            except Exception as e:
+                st.error(f"❌ Could not load image: {e}")
+
+    elif source_tab == "📂 Real Dataset (NEU)":
+        # NEU Micro Surface Defect Database — real industrial images
+        neu_base = ROOT / "data" / "neu_surface_defect"
+        categories = {
+            "scratch":      "Scratch defects (oil-contaminated steel surface)",
+            "small_defect": "Small surface defects (micro-scale)",
+            "wipe_crack":   "Wipe cracks (linear surface cracks)",
+            "sdi":          "SDI — Surface Defect Images (steel)",
+            "spdi":         "SPDI — Steel Pipe Defect Images",
+        }
+
+        # Build list of available images
+        cat_choice = st.selectbox(
+            "Defect Category",
+            list(categories.keys()),
+            format_func=lambda x: f"{x.replace('_', ' ').title()} — {categories[x]}",
+            key="neu_cat",
+        )
+
+        cat_dir = neu_base / cat_choice
+        imgs_available = sorted(cat_dir.glob("*.jpg")) if cat_dir.exists() else []
+
+        if not imgs_available:
+            st.error("⚠️ Dataset images not found. Please check the data/neu_surface_defect/ folder.")
+        else:
+            img_names = [p.name for p in imgs_available]
+            chosen = st.selectbox(
+                f"Select image ({len(imgs_available)} available)",
+                img_names,
+                key="neu_img",
+            )
+            chosen_path = cat_dir / chosen
+            try:
+                with open(chosen_path, "rb") as f:
+                    image = load_image_from_bytes(f.read())
+                st.success(
+                    f"✅ Loaded real NEU image: **{chosen}** "
+                    f"({image.shape[1]}×{image.shape[0]} px) — Category: *{cat_choice}*"
+                )
+                st.info(
+                    "📌 **Dataset:** NEU Micro Surface Defect Database "
+                    "(Northeastern University) — Real industrial surface images."
+                )
             except Exception as e:
                 st.error(f"❌ Could not load image: {e}")
 
