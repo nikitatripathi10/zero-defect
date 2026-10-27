@@ -1,0 +1,2 @@
+# This file keeps the outputs/ directories tracked in version control.
+# Actual output files (figures, CSV reports) are generated at runtime.
