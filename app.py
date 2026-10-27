@@ -56,7 +56,7 @@ st.set_page_config(
 )
 
 # ── Custom CSS  (Radix UI Design System + Animations) ────────
-st.markdown("""
+st.html("""
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 /* ════════════════════════════════════════════════
@@ -711,7 +711,7 @@ hr { border-color: var(--border) !important; margin: var(--space-5) 0 !important
     border-color: var(--blue-9) transparent transparent transparent !important;
 }
 </style>
-""", unsafe_allow_html=True)
+""")
 
 
 # ════════════════════════════════════════════════
