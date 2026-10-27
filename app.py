@@ -808,7 +808,7 @@ def render_navbar():
     </div>
     """, unsafe_allow_html=True)
 
-    # Use a hidden radio for actual Streamlit state (this is how Streamlit routing works)
+    # Use a hidden radio for actual Streamlit state
     page = st.radio(
         "Page",
         [key for _, _, key in NAV_PAGES],
@@ -819,32 +819,6 @@ def render_navbar():
     )
     st.session_state.active_page = page
 
-    # Style the radio to look like pills (visible nav fallback)
-    st.markdown("""
-    <style>
-    div[data-testid="stHorizontalBlock"] > div:has([data-baseweb="radio"]) {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-5);
-        padding: 6px 10px;
-        margin-bottom: var(--space-4);
-    }
-    [data-baseweb="radio"] label > div:first-child {
-        background: transparent !important;
-        border-color: var(--border) !important;
-    }
-    [data-baseweb="radio"] label > div:first-child[data-checked="true"] {
-        background: var(--blue-9) !important;
-        border-color: var(--blue-9) !important;
-    }
-    [data-baseweb="radio"] label span {
-        font-size: 0.85rem !important;
-        font-weight: 500 !important;
-        color: var(--text-secondary) !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
     return page
 
 
@@ -853,104 +827,315 @@ def render_navbar():
 # ════════════════════════════════════════════════
 
 def page_overview():
-    st.markdown('<div class="hero-title">ZeroDefect</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div class="hero-sub">Intelligent Industrial Surface Defect Detection & Localization System</div>',
-        unsafe_allow_html=True
-    )
-    st.markdown(
-        '<div style="text-align:center; margin-bottom:2rem;">'
-        '<span class="hero-badge">ACADEMIC PROTOTYPE</span>&nbsp;&nbsp;'
-        '<span class="hero-badge">COMPUTER VISION</span>&nbsp;&nbsp;'
-        '<span class="hero-badge">IMAGE PROCESSING</span>'
-        '</div>',
-        unsafe_allow_html=True
-    )
+    st.html("""
+    <style>
+    @keyframes scan-line {
+      0%   { left: -60%; }
+      100% { left: 120%; }
+    }
+    @keyframes border-rotate {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes stagger-in {
+      from { opacity:0; transform: translateY(30px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+    @keyframes shimmer-bar {
+      0%   { left: -100%; }
+      100% { left: 200%; }
+    }
+    @keyframes rotate-ring {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+    @keyframes blink-dot {
+      0%,100% { opacity:1; } 50% { opacity:0.2; }
+    }
+    @keyframes wave {
+      0%,100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); }
+    }
 
-    col1, col2 = st.columns([1.4, 1])
+    .ov-hero {
+      position: relative; text-align: center;
+      padding: 56px 24px 48px; margin-bottom: 32px;
+      border-radius: 16px; overflow: hidden;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,144,255,0.15) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(110,86,207,0.12) 0%, transparent 70%),
+        #111113;
+      border: 1px solid rgba(0,144,255,0.2);
+    }
+    .ov-hero::before {
+      content: ''; position: absolute;
+      top: 0; left: -60%; width: 60%; height: 2px;
+      background: linear-gradient(90deg, transparent, #0090ff, #6e56cf, transparent);
+      animation: scan-line 3s ease-in-out infinite; opacity: 0.7;
+    }
+    .ov-hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 14px; border-radius: 9999px;
+      background: rgba(0,144,255,0.1); border: 1px solid rgba(0,144,255,0.35);
+      color: #70b8ff; font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 1.2px; text-transform: uppercase;
+      margin-bottom: 20px; animation: stagger-in 0.6s ease both;
+    }
+    .ov-hero-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #0090ff; display: inline-block;
+      animation: blink-dot 1.4s ease infinite;
+    }
+    .ov-hero-title {
+      font-size: clamp(2.8rem, 6vw, 4.2rem); font-weight: 900;
+      letter-spacing: -2px; line-height: 1.05; margin-bottom: 16px;
+      background: linear-gradient(135deg, #fff 0%, #70b8ff 35%, #baa7ff 65%, #fff 100%);
+      background-size: 300% 300%;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: stagger-in 0.7s ease 0.1s both, border-rotate 5s ease infinite;
+    }
+    .ov-hero-sub {
+      font-size: 1.05rem; color: #b2b3bc; max-width: 560px;
+      margin: 0 auto 28px; line-height: 1.7;
+      animation: stagger-in 0.7s ease 0.2s both;
+    }
+    .ov-hero-tags {
+      display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+      animation: stagger-in 0.7s ease 0.3s both;
+    }
+    .ov-tag {
+      padding: 5px 14px; border-radius: 9999px; font-size: 0.78rem;
+      font-weight: 600; letter-spacing: 0.5px; border: 1px solid;
+      transition: all 0.2s ease;
+    }
+    .ov-tag.blue   { background: rgba(0,144,255,0.1);  border-color: rgba(0,144,255,0.3);  color: #70b8ff; }
+    .ov-tag.violet { background: rgba(110,86,207,0.1); border-color: rgba(110,86,207,0.3); color: #baa7ff; }
+    .ov-tag.green  { background: rgba(70,167,88,0.1);  border-color: rgba(70,167,88,0.3);  color: #71d083; }
 
-    with col1:
-        st.markdown('<div class="zd-card">', unsafe_allow_html=True)
-        st.markdown('<div class="section-header">What is ZeroDefect?</div>', unsafe_allow_html=True)
-        st.markdown("""
-ZeroDefect is an academic computer vision system that analyses images of manufactured product 
-surfaces to identify potentially defective regions such as scratches, cracks, dents, surface 
-contamination, and unusual textures.
+    .ov-stats {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 12px; margin-bottom: 28px;
+    }
+    .ov-stat {
+      background: #19191b; border: 1px solid #393a40;
+      border-radius: 12px; padding: 20px 16px; text-align: center;
+      position: relative; overflow: hidden;
+      transition: all 0.2s ease; animation: stagger-in 0.6s ease both;
+    }
+    .ov-stat::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--c1), var(--c2));
+    }
+    .ov-stat::after {
+      content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+      animation: shimmer-bar 2.4s ease infinite;
+    }
+    .ov-stat:hover { border-color: #46474e; transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+    .ov-stat-val { font-size: 2.2rem; font-weight: 900; letter-spacing: -1px; line-height: 1; margin-bottom: 4px; }
+    .ov-stat-lbl { font-size: 0.72rem; color: #7d7f8a; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
 
-The system combines **classical digital image processing** with **texture feature analysis** to:
-- Detect and highlight suspicious surface regions
-- Provide quantitative measurements of flagged areas
-- Generate a visual defect-localisation overlay
-- Compare multiple detection approaches
-        """)
-        st.markdown('</div>', unsafe_allow_html=True)
+    .ov-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; margin-bottom: 20px; }
 
-        st.markdown('<div class="zd-card">', unsafe_allow_html=True)
-        st.markdown('<div class="section-header">Inspection Pipeline</div>', unsafe_allow_html=True)
+    .ov-card {
+      background: #19191b; border: 1px solid #393a40;
+      border-radius: 14px; padding: 24px; position: relative;
+      overflow: hidden; transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      animation: stagger-in 0.6s ease both;
+    }
+    .ov-card:hover { border-color: #46474e; box-shadow: 0 4px 24px rgba(0,0,0,0.5); }
+    .ov-card-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.95rem; font-weight: 700; color: #edeef0;
+      letter-spacing: -0.2px; margin-bottom: 16px;
+      padding-bottom: 12px; border-bottom: 1px solid #393a40;
+    }
+    .ov-card-icon {
+      width: 30px; height: 30px; border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.95rem; flex-shrink: 0;
+    }
+    .ov-card-icon.blue   { background: rgba(0,144,255,0.15); border: 1px solid rgba(0,144,255,0.25); }
+    .ov-card-icon.violet { background: rgba(110,86,207,0.15); border: 1px solid rgba(110,86,207,0.25); }
+    .ov-card-icon.green  { background: rgba(70,167,88,0.15); border: 1px solid rgba(70,167,88,0.25); }
+    .ov-card-icon.amber  { background: rgba(255,178,36,0.15); border: 1px solid rgba(255,178,36,0.25); }
 
-        steps = [
-            ("1️⃣", "Image Acquisition", "Load, validate, and display the original image with metadata."),
-            ("2️⃣", "Preprocessing", "Grayscale conversion → Gaussian/Median blur → CLAHE enhancement."),
-            ("3️⃣", "Edge Detection", "Canny algorithm detects structural boundaries and irregularities."),
-            ("4️⃣", "Thresholding", "Otsu's and adaptive methods create binary segmentation masks."),
-            ("5️⃣", "Morphological Processing", "Erosion/dilation clean masks and connect defect fragments."),
-            ("6️⃣", "Texture Analysis", "GLCM features and local std-dev maps score anomaly severity."),
-            ("7️⃣", "Defect Localisation", "Suspicious regions are identified, measured, and labelled."),
-            ("8️⃣", "Evaluation", "Pixel-level F1, IoU, AUROC are computed against ground-truth masks."),
-        ]
-        for icon, name, desc in steps:
-            st.markdown(f"""
-            <div style="display:flex; gap:0.8rem; margin-bottom:0.6rem; align-items:flex-start;">
-                <span style="font-size:1.1rem;">{icon}</span>
-                <div>
-                    <strong style="color:#3a86ff;">{name}</strong><br/>
-                    <span style="color:#8b92a5; font-size:0.88rem;">{desc}</span>
-                </div>
+    .ov-step {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 10px; border-radius: 8px;
+      transition: background 0.15s ease; animation: stagger-in 0.5s ease both; margin-bottom: 2px;
+    }
+    .ov-step:hover { background: #222325; }
+    .ov-step-num {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: rgba(0,144,255,0.12); border: 1px solid rgba(0,144,255,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 800; color: #70b8ff;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .ov-step-name { font-size: 0.85rem; font-weight: 700; color: #edeef0; margin-bottom: 2px; }
+    .ov-step-desc { font-size: 0.78rem; color: #7d7f8a; line-height: 1.5; }
+
+    .ov-anomaly-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .ov-anomaly {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 12px; background: #222325; border: 1px solid #393a40;
+      border-radius: 8px; font-size: 0.82rem; font-weight: 500; color: #b2b3bc;
+      transition: all 0.15s ease;
+    }
+    .ov-anomaly:hover { background: #292a2e; border-color: #46474e; color: #edeef0; }
+    .ov-anomaly-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+    .ov-tech-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 0; border-bottom: 1px solid #292a2e; font-size: 0.82rem;
+    }
+    .ov-tech-row:last-child { border-bottom: none; }
+    .ov-tech-name { font-weight: 700; color: #edeef0; }
+    .ov-tech-desc { color: #7d7f8a; font-size: 0.78rem; }
+
+    .ov-dataset {
+      background: rgba(0,144,255,0.06); border: 1px solid rgba(0,144,255,0.2);
+      border-radius: 10px; padding: 14px 16px; margin-bottom: 10px;
+    }
+    .ov-dataset-title { font-size: 0.85rem; font-weight: 700; color: #70b8ff; margin-bottom: 6px; }
+    .ov-dataset-sub { font-size: 0.78rem; color: #7d7f8a; line-height: 1.6; }
+
+    .ov-wave { display: flex; align-items: center; gap: 3px; height: 24px; margin-left: auto; }
+    .ov-wave-bar { width: 3px; background: #0090ff; border-radius: 2px; animation: wave 1s ease-in-out infinite; }
+    .ov-wave-bar:nth-child(2) { animation-delay: 0.1s; background: #3b9eff; }
+    .ov-wave-bar:nth-child(3) { animation-delay: 0.2s; background: #6e56cf; }
+    .ov-wave-bar:nth-child(4) { animation-delay: 0.3s; background: #7d66d9; }
+    .ov-wave-bar:nth-child(5) { animation-delay: 0.4s; background: #baa7ff; }
+
+    .ov-ring-deco { position: absolute; top: 16px; right: 16px; width: 40px; height: 40px; }
+    .ov-ring-deco::before {
+      content: ''; position: absolute; inset: 0; border-radius: 50%;
+      border: 2px solid transparent;
+      border-top-color: rgba(0,144,255,0.4); border-right-color: rgba(110,86,207,0.3);
+      animation: rotate-ring 3s linear infinite;
+    }
+
+    @media (max-width: 768px) {
+      .ov-stats { grid-template-columns: repeat(2,1fr); }
+      .ov-grid  { grid-template-columns: 1fr; }
+    }
+    </style>
+
+    <div class="ov-hero">
+      <div class="ov-hero-badge"><span class="ov-hero-dot"></span> Live &middot; Academic Prototype</div>
+      <div class="ov-hero-title">ZeroDefect</div>
+      <div class="ov-hero-sub">
+        Intelligent Industrial Surface Defect Detection &amp; Localisation System &mdash;
+        powered by classical computer vision and texture analysis.
+      </div>
+      <div class="ov-hero-tags">
+        <span class="ov-tag blue">&#128300; Computer Vision</span>
+        <span class="ov-tag violet">&#129504; Image Processing</span>
+        <span class="ov-tag green">&#128202; Real Dataset (NEU)</span>
+        <span class="ov-tag blue">&#9889; Streamlit</span>
+        <span class="ov-tag violet">&#128013; Python 3</span>
+      </div>
+    </div>
+
+    <div class="ov-stats">
+      <div class="ov-stat" style="--c1:#0090ff;--c2:#3b9eff; animation-delay:0.0s;">
+        <div class="ov-stat-val" style="color:#70b8ff;">51</div>
+        <div class="ov-stat-lbl">Real Dataset Images</div>
+      </div>
+      <div class="ov-stat" style="--c1:#6e56cf;--c2:#baa7ff; animation-delay:0.1s;">
+        <div class="ov-stat-val" style="color:#baa7ff;">5</div>
+        <div class="ov-stat-lbl">Defect Categories</div>
+      </div>
+      <div class="ov-stat" style="--c1:#46a758;--c2:#71d083; animation-delay:0.2s;">
+        <div class="ov-stat-val" style="color:#71d083;">8</div>
+        <div class="ov-stat-lbl">Pipeline Stages</div>
+      </div>
+      <div class="ov-stat" style="--c1:#ffb224;--c2:#ffcb47; animation-delay:0.3s;">
+        <div class="ov-stat-val" style="color:#f1a10d;">2</div>
+        <div class="ov-stat-lbl">Detection Methods</div>
+      </div>
+    </div>
+
+    <div class="ov-grid">
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="ov-card" style="animation-delay:0.1s;">
+          <div class="ov-ring-deco"></div>
+          <div class="ov-card-title">
+            <div class="ov-card-icon blue">&#128300;</div>
+            <span>What is ZeroDefect?</span>
+            <div class="ov-wave"><div class="ov-wave-bar"></div><div class="ov-wave-bar"></div><div class="ov-wave-bar"></div><div class="ov-wave-bar"></div><div class="ov-wave-bar"></div></div>
+          </div>
+          <p style="font-size:0.87rem; color:#b2b3bc; line-height:1.75; margin:0 0 12px;">
+            ZeroDefect is an academic computer vision system that analyses images of manufactured
+            product surfaces to identify potentially defective regions &mdash; scratches, cracks, dents,
+            surface contamination, and unusual textures.
+          </p>
+          <p style="font-size:0.87rem; color:#b2b3bc; line-height:1.75; margin:0;">
+            It combines <strong style="color:#edeef0;">classical digital image processing</strong>
+            with <strong style="color:#edeef0;">texture feature analysis</strong> to detect, highlight,
+            measure, and localise anomalous surface regions in real time.
+          </p>
+        </div>
+        <div class="ov-card" style="animation-delay:0.2s;">
+          <div class="ov-card-title"><div class="ov-card-icon violet">&#9881;</div><span>Inspection Pipeline</span></div>
+          <div class="ov-step" style="animation-delay:0.15s;"><div class="ov-step-num">1</div><div><div class="ov-step-name">Image Acquisition</div><div class="ov-step-desc">Load, validate, and display the original image with full metadata.</div></div></div>
+          <div class="ov-step" style="animation-delay:0.20s;"><div class="ov-step-num">2</div><div><div class="ov-step-name">Preprocessing</div><div class="ov-step-desc">Grayscale, Gaussian/Median blur, CLAHE contrast enhancement.</div></div></div>
+          <div class="ov-step" style="animation-delay:0.25s;"><div class="ov-step-num">3</div><div><div class="ov-step-name">Edge Detection</div><div class="ov-step-desc">Canny algorithm detects structural boundaries and irregularities.</div></div></div>
+          <div class="ov-step" style="animation-delay:0.30s;"><div class="ov-step-num">4</div><div><div class="ov-step-name">Thresholding</div><div class="ov-step-desc">Otsu's and adaptive methods create binary segmentation masks.</div></div></div>
+          <div class="ov-step" style="animation-delay:0.35s;"><div class="ov-step-num">5</div><div><div class="ov-step-name">Morphological Processing</div><div class="ov-step-desc">Erosion/dilation clean noise and connect defect fragments.</div></div></div>
+          <div class="ov-step" style="animation-delay:0.40s;"><div class="ov-step-num">6</div><div><div class="ov-step-name">Texture Analysis</div><div class="ov-step-desc">GLCM features and local std-dev maps score anomaly severity.</div></div></div>
+          <div class="ov-step" style="animation-delay:0.45s;"><div class="ov-step-num">7</div><div><div class="ov-step-name">Defect Localisation</div><div class="ov-step-desc">Suspicious regions identified, measured, and labelled with bounding boxes.</div></div></div>
+          <div class="ov-step" style="animation-delay:0.50s;"><div class="ov-step-num">8</div><div><div class="ov-step-name">Evaluation</div><div class="ov-step-desc">Pixel-level F1, IoU, Precision &amp; Recall against ground-truth masks.</div></div></div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="ov-card" style="animation-delay:0.15s;">
+          <div class="ov-card-title"><div class="ov-card-icon green">&#128269;</div><span>Detectable Anomalies</span></div>
+          <div class="ov-anomaly-grid">
+            <div class="ov-anomaly"><div class="ov-anomaly-dot" style="background:#e5484d;"></div>Scratches</div>
+            <div class="ov-anomaly"><div class="ov-anomaly-dot" style="background:#ff6b35;"></div>Cracks</div>
+            <div class="ov-anomaly"><div class="ov-anomaly-dot" style="background:#ffb224;"></div>Dents</div>
+            <div class="ov-anomaly"><div class="ov-anomaly-dot" style="background:#46a758;"></div>Contamination</div>
+            <div class="ov-anomaly"><div class="ov-anomaly-dot" style="background:#0090ff;"></div>Unusual Textures</div>
+            <div class="ov-anomaly"><div class="ov-anomaly-dot" style="background:#6e56cf;"></div>Colour Anomalies</div>
+            <div class="ov-anomaly"><div class="ov-anomaly-dot" style="background:#b2b3bc;"></div>Foreign Objects</div>
+            <div class="ov-anomaly"><div class="ov-anomaly-dot" style="background:#70b8ff;"></div>Wipe Cracks</div>
+          </div>
+        </div>
+        <div class="ov-card" style="animation-delay:0.25s;">
+          <div class="ov-card-title"><div class="ov-card-icon amber">&#128295;</div><span>Technology Stack</span></div>
+          <div class="ov-tech-row"><span class="ov-tech-name">Python 3</span><span class="ov-tech-desc">Core language</span></div>
+          <div class="ov-tech-row"><span class="ov-tech-name">OpenCV</span><span class="ov-tech-desc">Image processing</span></div>
+          <div class="ov-tech-row"><span class="ov-tech-name">scikit-image</span><span class="ov-tech-desc">GLCM, LBP features</span></div>
+          <div class="ov-tech-row"><span class="ov-tech-name">NumPy</span><span class="ov-tech-desc">Pixel-level operations</span></div>
+          <div class="ov-tech-row"><span class="ov-tech-name">scikit-learn</span><span class="ov-tech-desc">Evaluation metrics</span></div>
+          <div class="ov-tech-row"><span class="ov-tech-name">Streamlit</span><span class="ov-tech-desc">Web interface</span></div>
+          <div class="ov-tech-row"><span class="ov-tech-name">Plotly / Matplotlib</span><span class="ov-tech-desc">Visualisations</span></div>
+        </div>
+        <div class="ov-card" style="animation-delay:0.35s;">
+          <div class="ov-card-title"><div class="ov-card-icon blue">&#128194;</div><span>Dataset</span></div>
+          <div class="ov-dataset">
+            <div class="ov-dataset-title">NEU Micro Surface Defect DB</div>
+            <div class="ov-dataset-sub">
+              51 real industrial images &middot; 5 defect types<br/>
+              Scratch &middot; Small Defect &middot; Wipe Crack &middot; SDI &middot; SPDI<br/>
+              <strong style="color:#70b8ff;">Built-in &mdash; available directly in the app</strong>
             </div>
-            """, unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    with col2:
-        st.markdown('<div class="zd-card">', unsafe_allow_html=True)
-        st.markdown('<div class="section-header">Detectable Anomalies</div>', unsafe_allow_html=True)
-        anomalies = ["🔴 Scratches", "🟠 Cracks", "🟡 Dents / irregularities",
-                     "🟢 Surface contamination", "🔵 Unusual textures",
-                     "🟣 Colour anomalies", "⚪ Foreign objects"]
-        for a in anomalies:
-            st.markdown(f"- {a}")
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        st.markdown('<div class="zd-card">', unsafe_allow_html=True)
-        st.markdown('<div class="section-header">Technology Stack</div>', unsafe_allow_html=True)
-        techs = {
-            "Python 3": "Core language",
-            "OpenCV": "Image processing primitives",
-            "scikit-image": "GLCM, LBP texture features",
-            "NumPy": "Pixel-level array operations",
-            "scikit-learn": "Evaluation metrics, AUROC",
-            "Streamlit": "This web interface",
-            "Matplotlib / Plotly": "Visualisations",
-        }
-        for tech, desc in techs.items():
-            st.markdown(f"**{tech}** — {desc}")
-        st.markdown('</div>', unsafe_allow_html=True)
-
-        st.markdown('<div class="zd-card">', unsafe_allow_html=True)
-        st.markdown('<div class="section-header">Dataset</div>', unsafe_allow_html=True)
-        st.markdown("""
-**NEU Micro Surface Defect Database**  
-*(Northeastern University — included in this project)*
-
-- **51 real industrial surface images** across 5 defect categories
-- Scratch, Small Defect, Wipe Crack, SDI, SPDI defects
-- Real steel/oil surface photographs from manufacturing
-- Available directly in the app under 📂 Real Dataset tab
-
-**MVTec AD** (optional, for ground-truth evaluation)  
-[mvtec.com/research-teaching/datasets/mvtec-ad](https://www.mvtec.com/research-teaching/datasets/mvtec-ad)  
-*Licensed for non-commercial academic use only.*
-        """)
-        st.markdown('</div>', unsafe_allow_html=True)
+          </div>
+          <div class="ov-dataset" style="background:rgba(110,86,207,0.06); border-color:rgba(110,86,207,0.2);">
+            <div class="ov-dataset-title" style="color:#baa7ff;">MVTec AD (optional)</div>
+            <div class="ov-dataset-sub">
+              For ground-truth mask evaluation only.<br/>
+              Non-commercial academic licence &middot; <a href="https://www.mvtec.com/research-teaching/datasets/mvtec-ad" style="color:#baa7ff;" target="_blank">mvtec.com</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    """)
 
 
 # ════════════════════════════════════════════════
