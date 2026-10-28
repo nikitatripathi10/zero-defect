@@ -1122,15 +1122,8 @@ def page_overview():
       0%   { left: -100%; }
       100% { left: 200%; }
     }
-    @keyframes rotate-ring {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
     @keyframes blink-dot {
       0%,100% { opacity:1; } 50% { opacity:0.2; }
-    }
-    @keyframes wave {
-      0%,100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); }
     }
 
     .ov-hero {
@@ -1278,21 +1271,6 @@ def page_overview():
     .ov-dataset-title { font-size: 0.85rem; font-weight: 700; color: #70b8ff; margin-bottom: 6px; }
     .ov-dataset-sub { font-size: 0.78rem; color: #7d7f8a; line-height: 1.6; }
 
-    .ov-wave { display: flex; align-items: center; gap: 3px; height: 24px; margin-left: auto; }
-    .ov-wave-bar { width: 3px; background: #0090ff; border-radius: 2px; animation: wave 1s ease-in-out infinite; }
-    .ov-wave-bar:nth-child(2) { animation-delay: 0.1s; background: #3b9eff; }
-    .ov-wave-bar:nth-child(3) { animation-delay: 0.2s; background: #6e56cf; }
-    .ov-wave-bar:nth-child(4) { animation-delay: 0.3s; background: #7d66d9; }
-    .ov-wave-bar:nth-child(5) { animation-delay: 0.4s; background: #baa7ff; }
-
-    .ov-ring-deco { position: absolute; top: 16px; right: 16px; width: 40px; height: 40px; }
-    .ov-ring-deco::before {
-      content: ''; position: absolute; inset: 0; border-radius: 50%;
-      border: 2px solid transparent;
-      border-top-color: rgba(0,144,255,0.4); border-right-color: rgba(110,86,207,0.3);
-      animation: rotate-ring 3s linear infinite;
-    }
-
     @media (max-width: 768px) {
       .ov-stats { grid-template-columns: repeat(2,1fr); }
       .ov-grid  { grid-template-columns: 1fr; }
@@ -1329,11 +1307,9 @@ def page_overview():
     <div class="ov-grid">
       <div style="display:flex; flex-direction:column; gap:16px;">
         <div class="ov-card" style="animation-delay:0.1s;">
-          <div class="ov-ring-deco"></div>
           <div class="ov-card-title">
             <div class="ov-card-icon blue">&#128300;</div>
             <span>Platform Overview</span>
-            <div class="ov-wave"><div class="ov-wave-bar"></div><div class="ov-wave-bar"></div><div class="ov-wave-bar"></div><div class="ov-wave-bar"></div><div class="ov-wave-bar"></div></div>
           </div>
           <p style="font-size:0.87rem; color:#b2b3bc; line-height:1.75; margin:0 0 12px;">
             ZeroDefect provides automated optical surface defect inspection for manufactured materials,
@@ -2163,19 +2139,20 @@ def ensure_default_result():
 
 
 def main():
-    ensure_default_result()
     page = render_navbar()
 
     if page == "🏠 Overview":
         page_overview()
-    elif page == "🔍 Inspect Image":
-        page_inspect()
-    elif page == "📊 Visual Analysis":
-        page_visual_analysis()
-    elif page == "📈 Metrics & Evaluation":
-        page_metrics()
-    elif page == "📤 Export":
-        page_export()
+    else:
+        ensure_default_result()
+        if page == "🔍 Inspect Image":
+            page_inspect()
+        elif page == "📊 Visual Analysis":
+            page_visual_analysis()
+        elif page == "📈 Metrics & Evaluation":
+            page_metrics()
+        elif page == "📤 Export":
+            page_export()
 
     # Footer
     st.markdown("""
