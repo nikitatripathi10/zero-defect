@@ -78,14 +78,14 @@ export const PipelineView = () => {
         <div className="mb-10">
           <div className="flex flex-wrap items-center gap-3 mb-3">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              Digital Image Processing Architecture
+              Optical Inspection Pipeline
             </h2>
             <span className="text-[10px] px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/25 text-blue-400 font-mono tracking-widest">
               5-STAGE PIPELINE
             </span>
           </div>
           <p className="text-sm text-slate-400 max-w-2xl">
-            Algorithmic breakdown of mathematical transforms — from raw sensor photons to calibrated defect masks.
+            Multi-stage surface inspection pipeline from raw sensor capture to calibrated defect masks.
           </p>
         </div>
       </ScrollReveal>
@@ -161,7 +161,7 @@ export const PipelineView = () => {
                     <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
                     <div className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
                   </div>
-                  <span className="text-[10px] text-slate-500 font-mono uppercase tracking-widest ml-1">OpenCV Implementation</span>
+                  <span className="text-[10px] text-slate-500 font-mono uppercase tracking-widest ml-1">Pipeline Operation</span>
                 </div>
                 <div className="p-4 font-mono text-xs text-blue-300">
                   <code>{stage.code}</code>

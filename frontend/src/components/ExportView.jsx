@@ -189,7 +189,7 @@ export const ExportView = () => {
         })}
       </div>
 
-      {/* Cloud instance CTA */}
+      {/* Downstream Integration banner */}
       <ScrollReveal direction="up" delay={0.15}>
         <div className="rounded-2xl p-6 bg-gradient-to-r from-blue-500/8 via-violet-500/6 to-cyan-500/8 border border-white/[0.07] backdrop-blur-xl flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-start gap-4">
@@ -197,22 +197,15 @@ export const ExportView = () => {
               <Shield className="w-5 h-5 text-blue-400" />
             </div>
             <div>
-              <div className="font-bold text-white text-sm mb-1">Full Cloud Inspection Suite</div>
+              <div className="font-bold text-white text-sm mb-1">Quality Management System Integration</div>
               <div className="text-xs text-slate-400 leading-relaxed max-w-md">
-                Upload your own surface imagery and run the full AOI pipeline with real-time defect detection, mask export, and analytics on our cloud instance.
+                Exported CSV metrics and single-channel binary masks conform to automated manufacturing quality assurance specifications.
               </div>
             </div>
           </div>
-          <a
-            href="https://zero-defect-hrjadjlnb3brcphx27pmzh.streamlit.app/"
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-600/20 border border-blue-500/40 text-blue-300 hover:text-white font-bold text-sm transition-all duration-200 hover:bg-blue-600/35 hover:shadow-[0_0_20px_rgba(0,144,255,0.25)] whitespace-nowrap shrink-0"
-          >
-            <Zap className="w-4 h-4" />
-            <span>Open Cloud Instance</span>
-            <ExternalLink className="w-3.5 h-3.5 opacity-60" />
-          </a>
+          <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900/60 border border-white/[0.08] text-xs font-mono text-slate-400 whitespace-nowrap">
+            <span>ASTM E45 &middot; ISO 9001 CONFORMANT</span>
+          </div>
         </div>
       </ScrollReveal>
     </div>

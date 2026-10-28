@@ -50,11 +50,11 @@ export const Navbar = ({ activeTab, setActiveTab }) => {
                   ZeroDefect
                 </span>
                 <span className="hidden sm:inline text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 tracking-widest uppercase">
-                  Enterprise
+                  AOI Suite
                 </span>
               </div>
               <div className="text-[10px] font-medium text-slate-500 tracking-widest mt-0.5 hidden sm:block">
-                SURFACE INTELLIGENCE PLATFORM
+                OPTICAL SURFACE INSPECTION
               </div>
             </div>
           </button>
@@ -88,7 +88,7 @@ export const Navbar = ({ activeTab, setActiveTab }) => {
             {/* Status indicator */}
             <div className="hidden lg:flex items-center gap-2 text-[10px] font-mono text-slate-400 bg-slate-900/60 border border-white/[0.06] px-3 py-1.5 rounded-lg">
               <Activity className="w-3 h-3 text-emerald-400 animate-pulse" />
-              <span>LIVE INSPECTION ENGINE</span>
+              <span>SYSTEM READY</span>
             </div>
 
             {/* Mobile menu toggle */}

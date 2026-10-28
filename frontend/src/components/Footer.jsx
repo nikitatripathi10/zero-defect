@@ -5,10 +5,10 @@ export const Footer = () => {
   const year = new Date().getFullYear();
 
   const links = [
-    { label: "Platform Overview", href: "#" },
-    { label: "Documentation", href: "#" },
-    { label: "Cloud Instance", href: "https://zero-defect-hrjadjlnb3brcphx27pmzh.streamlit.app/", external: true },
-    { label: "GitHub", href: "https://github.com/nikitatripathi10/zero-defect", external: true },
+    { label: "Overview", href: "#" },
+    { label: "Inspection Engine", href: "#" },
+    { label: "Quality Standards", href: "#" },
+    { label: "Source Code", href: "https://github.com/nikitatripathi10/zero-defect", external: true },
   ];
 
   const capabilities = [
@@ -32,12 +32,12 @@ export const Footer = () => {
               <div>
                 <div className="text-sm font-extrabold text-white tracking-tight flex items-center gap-2">
                   ZeroDefect
-                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-mono tracking-widest">
-                    ENTERPRISE
+                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400 font-mono tracking-widest">
+                    AOI PLATFORM
                   </span>
                 </div>
                 <div className="text-[10px] text-slate-500 tracking-widest mt-0.5 font-medium">
-                  SURFACE INTELLIGENCE PLATFORM
+                  AUTOMATED OPTICAL INSPECTION
                 </div>
               </div>
             </div>
@@ -85,17 +85,12 @@ export const Footer = () => {
         {/* Bottom row */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="text-[11px] text-slate-500 font-mono">
-            © {year} ZeroDefect Enterprise. All rights reserved.
+            © {year} ZeroDefect. All rights reserved.
           </div>
           <div className="flex items-center gap-4 text-[10px] text-slate-600">
             <span className="flex items-center gap-1.5">
-              <Zap className="w-3 h-3 text-blue-500" />
-              Built with React & Framer Motion
-            </span>
-            <span>·</span>
-            <span className="flex items-center gap-1.5">
               <Shield className="w-3 h-3 text-emerald-500" />
-              ISO 9001 Aligned
+              ASTM E45 &amp; ISO 9001 Aligned
             </span>
           </div>
         </div>

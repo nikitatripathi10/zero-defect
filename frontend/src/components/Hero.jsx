@@ -89,16 +89,16 @@ const FeatureCard = ({ feat, idx }) => {
 
 export const Hero = ({ onExplore }) => {
   const stats = [
-    { value: "51+",   label: "Industrial Surface Datasets",     color: "from-blue-400 to-cyan-400" },
-    { value: "5",     label: "Defect Classification Classes",   color: "from-violet-400 to-fuchsia-400" },
-    { value: "8",     label: "Active Processing Stages",        color: "from-emerald-400 to-teal-400" },
-    { value: "99.2%", label: "Sub-pixel Boundary Precision",    color: "from-amber-400 to-orange-400" },
+    { value: "51",    label: "Reference Surface Samples",     color: "from-blue-400 to-cyan-400" },
+    { value: "5",     label: "Defect Classifications",        color: "from-violet-400 to-fuchsia-400" },
+    { value: "8",     label: "Processing Stages",             color: "from-emerald-400 to-teal-400" },
+    { value: "99.2%", label: "Sub-Pixel Boundary Precision",  color: "from-amber-400 to-orange-400" },
   ];
 
   const features = [
     {
-      title: "Autonomous Anomaly Detection",
-      desc: "Combines adaptive Canny edge extraction with multi-directional GLCM texture analysis to capture microscopic fractures invisible to the naked eye.",
+      title: "Surface Anomaly Detection",
+      desc: "Combines adaptive Canny edge extraction with multi-directional GLCM texture analysis to capture microscopic fractures.",
       icon: Cpu,
       color: "text-blue-400",
       borderColor: "border-blue-500/20",
@@ -107,7 +107,7 @@ export const Hero = ({ onExplore }) => {
     },
     {
       title: "Real-Time Sub-Pixel Masking",
-      desc: "Morphological kernel filters isolate continuous fissures and eliminate sensor grain with high-throughput processing optimized for production lines.",
+      desc: "Morphological kernel filters isolate continuous fissures and eliminate sensor grain with high throughput.",
       icon: Layers,
       color: "text-violet-400",
       borderColor: "border-violet-500/20",
@@ -115,8 +115,8 @@ export const Hero = ({ onExplore }) => {
       glowBg: "rgba(139,92,246,0.06)",
     },
     {
-      title: "Production Quality Assurance",
-      desc: "Calibrated to ISO 9001 and ASTM manufacturing criteria, delivering verifiable defect area and perimeter reporting for regulatory compliance.",
+      title: "Quality Assurance Calibration",
+      desc: "Calibrated to ISO 9001 and ASTM manufacturing criteria, delivering verifiable defect area and perimeter reporting.",
       icon: ShieldCheck,
       color: "text-cyan-400",
       borderColor: "border-cyan-500/20",
@@ -128,9 +128,9 @@ export const Hero = ({ onExplore }) => {
   const capabilities = [
     "Sub-Millimeter Edge Accuracy",
     "Multi-Angle GLCM Analysis",
-    "Automated Anomaly Triage",
-    "ISO 9001 Certified Output",
-    "Real-Time Bounding Boxes",
+    "Automated Bounding Boxes",
+    "ISO 9001 Compliance Metrics",
+    "Lossless Telemetry Export",
     "60 FPS Processing Engine",
   ];
 
@@ -147,7 +147,7 @@ export const Hero = ({ onExplore }) => {
       >
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-500/10 via-violet-500/10 to-cyan-500/10 border border-blue-500/20 text-[11px] font-bold text-blue-300 shadow-[0_0_30px_rgba(0,144,255,0.15)] tracking-widest">
           <Sparkles className="w-3 h-3 text-cyan-400" />
-          <span>AUTONOMOUS VISION AI  ·  ENTERPRISE INSPECTION PLATFORM</span>
+          <span>AUTOMATED OPTICAL SURFACE INSPECTION PLATFORM</span>
           <Sparkles className="w-3 h-3 text-violet-400" />
         </div>
       </motion.div>
@@ -160,7 +160,7 @@ export const Hero = ({ onExplore }) => {
         className="text-center mt-8"
       >
         <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-[1.08]">
-          Intelligent{" "}
+          Automated{" "}
           <span
             className="text-transparent bg-clip-text"
             style={{
@@ -169,11 +169,11 @@ export const Hero = ({ onExplore }) => {
           >
             Surface Defect
           </span>
-          {" "}Intelligence
+          {" "}Detection
         </h1>
 
         <p className="mt-6 text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
-          Automated Optical Inspection (AOI) engine powering real-time defect segmentation,
+          High-resolution automated optical inspection platform delivering real-time defect segmentation,
           morphological fracture isolation, and precision quality assurance telemetry.
         </p>
 
@@ -193,7 +193,7 @@ export const Hero = ({ onExplore }) => {
           ))}
         </div>
 
-        {/* ── CTA buttons ── */}
+        {/* ── CTA button ── */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -210,19 +210,9 @@ export const Hero = ({ onExplore }) => {
           >
             <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: "linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4)" }} />
             <Zap className="w-4 h-4 relative z-10" />
-            <span className="relative z-10">Launch Live Inspection</span>
+            <span className="relative z-10">Launch Inspection System</span>
             <ArrowRight className="w-4 h-4 relative z-10 group-hover:translate-x-1 transition-transform duration-200" />
           </button>
-
-          <a
-            href="https://zero-defect-hrjadjlnb3brcphx27pmzh.streamlit.app/"
-            target="_blank"
-            rel="noreferrer"
-            className="group inline-flex items-center gap-2.5 px-8 py-3.5 rounded-xl bg-slate-900/80 border border-white/10 hover:border-white/20 text-slate-300 hover:text-white font-bold text-sm transition-all duration-200 hover:shadow-[0_0_20px_rgba(255,255,255,0.05)]"
-          >
-            <span>Cloud Instance</span>
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          </a>
         </motion.div>
       </motion.div>
 

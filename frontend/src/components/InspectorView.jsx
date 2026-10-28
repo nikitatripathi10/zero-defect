@@ -81,15 +81,15 @@ export const InspectorView = () => {
           <div>
             <div className="flex flex-wrap items-center gap-3 mb-2">
               <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-                Autonomous Inspection Engine
+                Surface Inspection Console
               </h2>
               <span className="text-[10px] px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 font-mono tracking-widest flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                LIVE SENSOR FEED
+                ACTIVE SENSOR
               </span>
             </div>
             <p className="text-sm text-slate-400">
-              Real-time optical evaluation powered by digital edge segmentation and GLCM anomaly statistics.
+              Optical surface evaluation with real-time defect segmentation and anomaly scoring.
             </p>
           </div>
 

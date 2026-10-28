@@ -212,10 +212,10 @@ export const MetricsView = () => {
 
             <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-blue-500/8 to-violet-500/8 border border-blue-500/15 flex items-center justify-between">
               <div>
-                <div className="text-[10px] text-slate-500 uppercase tracking-widest">Production Line Status</div>
+                <div className="text-[10px] text-slate-500 uppercase tracking-widest">System Status</div>
                 <div className="text-sm font-bold text-emerald-400 font-mono mt-0.5 flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block" />
-                  FULLY OPERATIONAL
+                  ONLINE &middot; NOMINAL
                 </div>
               </div>
               <Zap className="w-5 h-5 text-blue-400 opacity-60" />
