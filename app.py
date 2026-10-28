@@ -43,6 +43,54 @@ from src.visualization import (
     plot_metrics_bar, fig_to_numpy, save_figure
 )
 
+SURFACES_DIR = ROOT / "data" / "surfaces"
+GT_DIR = ROOT / "data" / "ground_truth"
+_IMAGE_GLOBS = ("*.jpg", "*.jpeg", "*.png", "*.bmp", "*.tif", "*.tiff")
+SURFACE_LABELS = {
+    "scratches": "Linear scratches",
+    "pitted_surface": "Pitted surface cavities",
+    "crazing": "Network crazing",
+    "rolled-in_scale": "Rolled-in oxide scale",
+    "inclusion": "Non-metallic inclusions",
+    "patches": "Patch discoloration",
+}
+
+
+def _list_images(folder: Path):
+    files = []
+    for pattern in _IMAGE_GLOBS:
+        files.extend(folder.glob(pattern))
+    return sorted(files)
+
+
+def _surface_categories():
+    if not SURFACES_DIR.exists():
+        return []
+    cats = []
+    for path in sorted(SURFACES_DIR.iterdir()):
+        if path.is_dir() and _list_images(path):
+            cats.append(path.name)
+    return cats
+
+
+def _gt_path_for(image_path: Path):
+    folder = GT_DIR / image_path.parent.name
+    for ext in (".png", ".bmp", ".jpg", ".tif", ".tiff"):
+        candidate = folder / f"{image_path.stem}{ext}"
+        if candidate.exists():
+            return candidate
+    return None
+
+
+def _load_gt_mask(gt_path: Path, shape_hw):
+    mask = cv2.imread(str(gt_path), cv2.IMREAD_GRAYSCALE)
+    if mask is None:
+        return None
+    h, w = shape_hw
+    if mask.shape[0] != h or mask.shape[1] != w:
+        mask = cv2.resize(mask, (w, h), interpolation=cv2.INTER_NEAREST)
+    return mask
+
 # ── Page configuration ──────────────────────────────────────
 st.set_page_config(
     page_title="ZeroDefect — Industrial Surface Inspection",
@@ -1287,11 +1335,11 @@ def page_overview():
 
     <div class="ov-stats">
       <div class="ov-stat" style="--c1:#0090ff;--c2:#3b9eff; animation-delay:0.0s;">
-        <div class="ov-stat-val" style="color:#70b8ff;">51</div>
-        <div class="ov-stat-lbl">Calibrated Reference Images</div>
+        <div class="ov-stat-val" style="color:#70b8ff;">512</div>
+        <div class="ov-stat-lbl">Pixel Inspection Frame</div>
       </div>
       <div class="ov-stat" style="--c1:#6e56cf;--c2:#baa7ff; animation-delay:0.1s;">
-        <div class="ov-stat-val" style="color:#baa7ff;">5</div>
+        <div class="ov-stat-val" style="color:#baa7ff;">8</div>
         <div class="ov-stat-lbl">Defect Classifications</div>
       </div>
       <div class="ov-stat" style="--c1:#46a758;--c2:#71d083; animation-delay:0.2s;">
@@ -1362,9 +1410,7 @@ def page_overview():
           <div class="ov-dataset">
             <div class="ov-dataset-title">Hot-Rolled &amp; Cold-Rolled Steel</div>
             <div class="ov-dataset-sub">
-              51 calibrated surface samples &middot; 5 defect classifications<br/>
-              Scratches &middot; Micro-Pits &middot; Cracks &middot; Oxide Scale &middot; Seams<br/>
-              <strong style="color:#70b8ff;">Available in sample inspector</strong>
+              Scratches &middot; Micro-pits &middot; Cracks &middot; Oxide scale &middot; Inclusions &middot; Seams
             </div>
           </div>
           <div class="ov-dataset" style="background:rgba(110,86,207,0.06); border-color:rgba(110,86,207,0.2);">
@@ -1415,7 +1461,7 @@ def page_inspect():
     # ── Image source ──────────────────────────────
     st.markdown('<div class="section-header">Image Source</div>', unsafe_allow_html=True)
 
-    sources = ["📂 Reference Library", "📁 Upload Image", "🧪 Test Pattern"]
+    sources = ["📂 Surface Defect Dataset", "📁 Upload Image", "🧪 Test Pattern"]
     if "img_src_choice" not in st.session_state:
         st.session_state.img_src_choice = sources[0]
 
@@ -1446,6 +1492,7 @@ def page_inspect():
     image = None
 
     if source_tab == "📁 Upload Image":
+        st.session_state["_pending_gt_path"] = None
         uploaded = st.file_uploader(
             "Upload a surface image",
             type=["jpg", "jpeg", "png", "bmp", "tiff"],
@@ -1454,6 +1501,7 @@ def page_inspect():
         if uploaded:
             try:
                 image = load_image_from_bytes(uploaded.read())
+                st.session_state["_pending_gt_path"] = None
                 st.success(f"✅ Loaded: **{uploaded.name}** ({image.shape[1]}×{image.shape[0]} px)")
             except Exception as e:
                 st.error(f"❌ Could not load image: {e}")
@@ -1473,50 +1521,39 @@ def page_inspect():
                     Drop surface image here for analysis
                 </div>
                 <div style="font-size: 0.8rem; color: #7d7f8a; max-width: 480px; margin: 0 auto;">
-                    Supports JPG, PNG, BMP, TIFF &middot; Or switch to <strong>📂 Reference Library</strong> to test with calibrated surface samples.
+                    Supports JPG, PNG, BMP, TIFF &middot; Or switch to <strong>📂 Surface Defect Dataset</strong> to inspect calibrated surface samples.
                 </div>
             </div>
             """, unsafe_allow_html=True)
 
-    elif source_tab == "📂 Reference Library":
-        neu_base = ROOT / "data" / "neu_surface_defect"
-        categories = {
-            "scratch":      "Scratch defects (oil-treated steel surface)",
-            "small_defect": "Micro-cavities and surface pits",
-            "wipe_crack":   "Transverse rolling wipe cracks",
-            "sdi":          "Steel surface oxidation and scaling",
-            "spdi":         "Cylindrical pipe seam fissures",
-        }
+    elif source_tab == "📂 Surface Defect Dataset":
+        categories = _surface_categories()
+        st.session_state["_pending_gt_path"] = None
 
-        # Build list of available images
-        cat_choice = st.selectbox(
-            "Defect Category",
-            list(categories.keys()),
-            format_func=lambda x: f"{x.replace('_', ' ').title()} — {categories[x]}",
-            key="neu_cat",
-        )
-
-        cat_dir = neu_base / cat_choice
-        imgs_available = sorted(cat_dir.glob("*.jpg")) if cat_dir.exists() else []
-
-        if not imgs_available:
+        if not categories:
             st.error("⚠️ Reference images not found. Please verify sample image directory.")
         else:
+            cat_choice = st.selectbox(
+                "Defect Category",
+                categories,
+                format_func=lambda x: SURFACE_LABELS.get(x, x.replace("_", " ").replace("-", " ").title()),
+                key="surface_cat",
+            )
+            imgs_available = _list_images(SURFACES_DIR / cat_choice)
             img_names = [p.name for p in imgs_available]
             chosen = st.selectbox(
                 f"Select image ({len(imgs_available)} available)",
                 img_names,
-                key="neu_img",
+                key="surface_img",
             )
-            chosen_path = cat_dir / chosen
+            chosen_path = SURFACES_DIR / cat_choice / chosen
             try:
                 with open(chosen_path, "rb") as f:
                     image = load_image_from_bytes(f.read())
+                gt_path = _gt_path_for(chosen_path)
+                st.session_state["_pending_gt_path"] = str(gt_path) if gt_path else None
                 st.success(
-                    f"✅ Loaded: **{chosen}** ({image.shape[1]}×{image.shape[0]} px) — Category: *{cat_choice}*"
-                )
-                st.info(
-                    "📌 **Reference Sample:** Calibrated industrial surface sample with sub-pixel ground truth."
+                    f"✅ Loaded: **{chosen}** ({image.shape[1]}×{image.shape[0]} px) — {SURFACE_LABELS.get(cat_choice, cat_choice)}"
                 )
             except Exception as e:
                 st.error(f"❌ Could not load image: {e}")
@@ -1535,6 +1572,7 @@ def page_inspect():
             key="demo_type",
         )
         image = _make_demo_image(demo_type)
+        st.session_state["_pending_gt_path"] = None
         st.info("🧪 Synthetic surface generated. You can also upload your own images.")
 
     # ── Run analysis ──────────────────────────────
@@ -1603,6 +1641,13 @@ def page_inspect():
                     st.session_state["result"] = result
                     st.session_state["original"] = image_resized
                     st.session_state["detection_method"] = detection_method
+                    pending_gt = st.session_state.get("_pending_gt_path")
+                    if pending_gt:
+                        st.session_state["library_gt_mask"] = _load_gt_mask(
+                            Path(pending_gt), image_resized.shape[:2]
+                        )
+                    else:
+                        st.session_state["library_gt_mask"] = None
                     st.success("✅ Inspection complete!")
 
                 except Exception as e:
@@ -1785,17 +1830,19 @@ def page_metrics():
     # ── Ground truth upload & benchmark ───────────────────────
     st.markdown('<div class="section-header">Ground-Truth Reference Mask</div>', unsafe_allow_html=True)
     st.markdown("""
-    Evaluate defect localization accuracy using pixel-level metrics against ground-truth defect masks (MVTec AD standard format).
+    Evaluate defect localization accuracy using pixel-level metrics against a ground-truth defect mask.
+    White / bright pixels mark defective regions; black marks good surface. PNG, BMP, or TIFF.
     """)
 
+    library_gt = st.session_state.get("library_gt_mask")
     col_up, col_bench = st.columns([1.6, 1])
     with col_up:
         gt_file = st.file_uploader("Upload ground-truth mask (PNG)", type=["png", "bmp", "tiff"], key="gt_upload")
     with col_bench:
         use_sample_gt = st.checkbox(
-            "🧪 Use reference benchmark mask",
-            value=(gt_file is None),
-            help="Generates an ASTM E45 reference ground-truth benchmark mask for automated tolerance validation.",
+            "🧪 Use synthetic benchmark mask",
+            value=(gt_file is None and library_gt is None),
+            help="Builds a synthetic mask from the prediction when no labeled mask is available.",
             key="use_sample_gt"
         )
 
@@ -1809,11 +1856,17 @@ def page_metrics():
             st.success("✅ Custom ground-truth mask loaded.")
         except Exception as e:
             st.error(f"❌ Could not load mask: {e}")
+    elif library_gt is not None:
+        gt_mask = cv2.resize(
+            library_gt,
+            (pred_mask.shape[1], pred_mask.shape[0]),
+            interpolation=cv2.INTER_NEAREST,
+        )
+        st.success("✅ Using the labeled mask for the inspected reference image.")
     elif use_sample_gt and pred_mask is not None:
-        # Create realistic ground-truth mask with slight boundary perturbation
         k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
         gt_mask = cv2.dilate(pred_mask, k, iterations=1)
-        st.info("📌 **Evaluation Mode:** Active with standard reference benchmark mask. Upload your own mask above anytime.")
+        st.info("📌 Synthetic benchmark mask in use. Upload a labeled mask, or inspect a reference image, for a real comparison.")
 
     if gt_mask is not None:
         c1, c2 = st.columns(2)
@@ -2094,19 +2147,30 @@ def _make_demo_image(demo_type: str) -> np.ndarray:
 
 @st.cache_data(show_spinner=False)
 def _load_cached_sample_result():
-    neu_base = ROOT / "data" / "neu_surface_defect" / "scratch"
-    sample_files = sorted(neu_base.glob("*.jpg")) if neu_base.exists() else []
+    sample_files = _list_images(SURFACES_DIR / "scratches")
+    if not sample_files:
+        for cat in _surface_categories():
+            sample_files = _list_images(SURFACES_DIR / cat)
+            if sample_files:
+                break
+
+    gt_mask = None
     if sample_files:
         try:
             with open(sample_files[0], "rb") as f:
                 raw = f.read()
             img = load_image_from_bytes(raw)
+            gt_path = _gt_path_for(sample_files[0])
         except Exception:
             img = _make_demo_image("Machined metal (scratch defect)")
+            gt_path = None
     else:
         img = _make_demo_image("Machined metal (scratch defect)")
+        gt_path = None
 
     img_resized = cv2.resize(img, (512, 512))
+    if gt_path:
+        gt_mask = _load_gt_mask(gt_path, img_resized.shape[:2])
     prep_cfg = {
         "blur_method": "gaussian",
         "blur_kernel": 5,
@@ -2120,7 +2184,7 @@ def _load_cached_sample_result():
         min_defect_area=150,
     )
     overlay = create_overlay(img_resized, res["clean_mask"])
-    return res, img_resized, overlay
+    return res, img_resized, overlay, gt_mask
 
 
 def ensure_default_result():
@@ -2128,12 +2192,14 @@ def ensure_default_result():
     if "result" in st.session_state and st.session_state["result"] is not None:
         return
     try:
-        res, img_resized, overlay = _load_cached_sample_result()
+        res, img_resized, overlay, gt_mask = _load_cached_sample_result()
         st.session_state["result"] = res
         st.session_state["original"] = img_resized
         st.session_state["detection_method"] = "Classical"
         st.session_state["overlay"] = overlay
         st.session_state["annotated"] = res["annotated"]
+        if "library_gt_mask" not in st.session_state:
+            st.session_state["library_gt_mask"] = gt_mask
     except Exception:
         pass
 
